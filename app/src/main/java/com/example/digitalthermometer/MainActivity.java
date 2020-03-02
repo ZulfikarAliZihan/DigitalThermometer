@@ -2,6 +2,7 @@ package com.example.digitalthermometer;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.hardware.Camera;
 import android.os.Bundle;
 
 import android.bluetooth.BluetoothAdapter;
@@ -15,6 +16,8 @@ import android.os.Handler;
 import android.os.SystemClock;
 //import android.support.v7.app.AppCompatActivity;
 //import android.os.Bundle;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -31,11 +34,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.Set;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback {
 
     // GUI Components
     private TextView mBluetoothStatus;
     private TextView mReadBuffer;
+    private TextView mAmbient;
     private Button mScanBtn;
     private Button mOffBtn;
     private Button mListPairedDevicesBtn;
@@ -44,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private Set<BluetoothDevice> mPairedDevices;
     private ArrayAdapter<String> mBTArrayAdapter;
     private ListView mDevicesListView;
-    private CheckBox mLED1;
+    //private CheckBox mLED1;
 
     private Handler mHandler; // Our main handler that will receive callback notifications
     private ConnectedThread mConnectedThread; // bluetooth background worker thread to send and receive data
@@ -58,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
     private final static int MESSAGE_READ = 2; // used in bluetooth handler to identify message update
     private final static int CONNECTING_STATUS = 3; // used in bluetooth handler to identify message status
 
+    private SurfaceView surfaceView;
+    private Camera camera;
+    private SurfaceHolder surfaceHolder;
+    //private android.hardware.Camera.PictureCallback pictureCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         mOffBtn = (Button)findViewById(R.id.off);
         mDiscoverBtn = (Button)findViewById(R.id.discover);
         mListPairedDevicesBtn = (Button)findViewById(R.id.PairedBtn);
-        mLED1 = (CheckBox)findViewById(R.id.checkboxLED1);
+
 
         mBTArrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1);
         mBTAdapter = BluetoothAdapter.getDefaultAdapter(); // get a handle on the bluetooth radio
@@ -78,6 +86,12 @@ public class MainActivity extends AppCompatActivity {
         mDevicesListView = (ListView)findViewById(R.id.devicesListView);
         mDevicesListView.setAdapter(mBTArrayAdapter); // assign model to view
         mDevicesListView.setOnItemClickListener(mDeviceClickListener);
+
+        surfaceView = (SurfaceView) findViewById(R.id.surfaceView);
+        surfaceHolder = surfaceView.getHolder();
+        surfaceHolder.addCallback(this);
+        surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        mAmbient = (TextView) findViewById(R.id.envTemp);
 
 
 
@@ -91,12 +105,19 @@ public class MainActivity extends AppCompatActivity {
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
-                    mReadBuffer.setText(readMessage);
+                    String[] data=readMessage.split(":",2);
+
+                        mAmbient.setText("Ambient: "+data[1]+"*C");
+
+
+                        mReadBuffer.setText("Body: "+data[0]);
+
+
                 }
 
                 if(msg.what == CONNECTING_STATUS){
                     if(msg.arg1 == 1)
-                        mBluetoothStatus.setText("Connected to Device: " + (String)(msg.obj));
+                        mBluetoothStatus.setText("Connected to: " + (String)(msg.obj));
                     else
                         mBluetoothStatus.setText("Connection Failed");
                 }
@@ -110,13 +131,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
 
-            mLED1.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v){
-                    if(mConnectedThread != null) //First check to make sure thread created
-                        mConnectedThread.write("1");
-                }
-            });
+
 
 
             mScanBtn.setOnClickListener(new View.OnClickListener() {
@@ -148,6 +163,44 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        try {
+            camera= Camera.open();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Camera.Parameters parameters;
+        parameters = camera.getParameters();
+        parameters.setPreviewFrameRate(20);
+        parameters.setPreviewSize(352,288);
+        camera.setParameters(parameters);
+        camera.setDisplayOrientation(90);
+        try {
+            camera.setPreviewDisplay(surfaceHolder);
+            camera.startPreview();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+
+        camera.startPreview();
+        camera.release();
+        camera=null;
+    }
+
+
 
     private void bluetoothOn(View view){
         if (!mBTAdapter.isEnabled()) {
@@ -287,6 +340,8 @@ public class MainActivity extends AppCompatActivity {
         return  device.createRfcommSocketToServiceRecord(BTMODULEUUID);
         //creates secure outgoing connection with BT device using UUID
     }
+
+
 
     private class ConnectedThread extends Thread {
         private final BluetoothSocket mmSocket;
