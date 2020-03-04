@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                     }
                     String[] data=readMessage.split(":",2);
 
-                        mAmbient.setText("Ambient: "+data[1]+"*C");
+                        mAmbient.setText("Ambient: "+data[1]+"*F");
 
 
                         mReadBuffer.setText("Body: "+data[0]);

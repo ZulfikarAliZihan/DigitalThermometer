@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,53 +12,47 @@
 
 
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="410dp"
+        android:layout_height="730dp"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:text="Digital Thermometer"
             android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_gravity="center_horizontal"
-            />
+            android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginVertical="10dp"
             android:layout_marginHorizontal="4dp"
-            android:weightSum="2"
-            >
+            android:layout_marginVertical="10dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:weightSum="2"
                 android:orientation="vertical"
-                >
+                android:weightSum="2">
 
                 <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Bluetooth ON"
                     android:id="@+id/scan"
-                    android:layout_weight="1"
-                    />
-
-                <Button
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Bluetooth OFF"
-                    android:id="@+id/off"
                     android:layout_weight="1"
-                    />
+                    android:text="Bluetooth ON" />
 
+                <Button
+                    android:id="@+id/off"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Bluetooth OFF" />
 
 
             </LinearLayout>
@@ -66,23 +61,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:weightSum="2"
                 android:orientation="vertical"
-                >
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Show paired Devices"
-                    android:id="@+id/PairedBtn"
-                    android:layout_weight="1"
-                    />
+                android:weightSum="2">
 
                 <Button
+                    android:id="@+id/PairedBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Discover New "
-                    android:id="@+id/discover"
                     android:layout_weight="1"
+                    android:text="Show paired Devices" />
+
+                <Button
+                    android:id="@+id/discover"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Discover New "
 
                     />
 
@@ -91,55 +85,54 @@
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.1"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="Status:"
-                android:ellipsize="end"
-                android:maxLines="1"
                 android:textStyle="bold" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.9"
 
-                android:text="Not Connected"
+            <TextView
                 android:id="@+id/bluetoothStatus"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:layout_centerHorizontal="true"
-                android:layout_alignTop="@+id/checkboxLED1" />
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.9"
 
-                android:hint="Ambient temperature"
-                android:id="@+id/envTemp"
+                android:layout_alignTop="@+id/checkboxLED1"
+                android:layout_centerHorizontal="true"
+                android:layout_weight="0.9"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:text="Not Connected" />
+
+            <TextView
+                android:id="@+id/envTemp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
                 android:layout_centerHorizontal="true"
-               />
+                android:layout_weight="0.9"
+                android:ellipsize="end"
+                android:hint="Ambient temperature"
+                android:maxLines="1" />
 
         </LinearLayout>
-
 
 
         <TextView
             android:id="@+id/readBuffer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:hint="Body temperature"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="14dp"
-            android:layout_gravity="center_horizontal"/>
-
-
+            android:hint="Body temperature"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
 
         <SurfaceView
@@ -148,13 +141,16 @@
             android:layout_height="350dp">
 
         </SurfaceView>
+
+
+
         <ListView
+            android:id="@+id/devicesListView"
             android:layout_width="wrap_content"
             android:layout_height="100dp"
-            android:id="@+id/devicesListView"
-            android:choiceMode="singleChoice"
             android:layout_marginBottom="10dp"
-             />
+            android:choiceMode="singleChoice" />
+
 
 
 
